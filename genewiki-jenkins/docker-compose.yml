@@ -12,13 +12,17 @@
 version: '3'
 
 services:
-  jenkins:
-    image: jenkins:latest
+  ## Script to setup jenkins to run proteinboxbot bots
+  ## available as aa.bb.cc.dd:8080
+  proteinboxbot:
+    image: andrawaag/genewiki-jenkins:latest
     ports:
       - 8080:8080
-      - 50000:50000
     volumes:
-      - genewiki-jenkins-home:/var/jenkins_home
-
+      - proteinboxbot-jenkins-home:/var/jenkins_home
+    env_file:
+      - .env
+  
 volumes:
-  genewiki-jenkins-home:
+  proteinboxbot-jenkins-home:
+

@@ -1,16 +1,26 @@
 FROM jenkins/jenkins:lts
+
+MAINTAINER Andra Waagmeester <andra@micelio.be>
+
 ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false"
 RUN install-plugins.sh slack conditional-buildstep parameterized-trigger
-COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
-RUN /usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins.txt
+# # # COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
+# # # RUN /usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins.txt
 
 USER root
-RUN apt-get update && apt-get install -y python3 python3-venv python3-pip python3-numpy python3-pandas
-RUN apt-get install -y jq python3-click
-RUN apt-get install -y virtualenv
 
-# drop back to the regular jenkins user - good practice
-USER jenkins
+RUN apt-get update && apt-get install -y make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev  libncursesw5-dev xz-utils tk-dev
+RUN wget https://www.python.org/ftp/python/3.6.4/Python-3.6.4.tgz && tar xvf Python-3.6.4.tgz
+RUN cd Python-3.6.4 && ./configure --enable-optimizations && make -j8 && make altinstall
 
-COPY --chown=jenkins:jenkins jenkins_home/jobs /var/jenkins_home/jobs
-COPY --chown=jenkins:jenkins jenkins_home/hudson.plugins.git.GitTool.xml /var/jenkins_home/hudson.plugins.git.GitTool.xml
+RUN apt-get update && apt-get install -y git virtualenv
+
+USER jenkins 
+RUN pwd
+
+# docker build -t wurssb/jenkins .
+# docker run -it wurssb/jenkins
+
+ENTRYPOINT ["/sbin/tini", "--", "/usr/local/bin/jenkins.sh"]
+
+
