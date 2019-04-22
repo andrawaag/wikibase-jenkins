@@ -17,9 +17,8 @@ RUN apt-get update && apt-get install -y git virtualenv
 
 USER jenkins 
 RUN pwd
+RUN cd /var/jenkins_home/jobs && git clone https://github.com/andrawaag/genewiki_jenkins_tasks.git
 
-# docker build -t wurssb/jenkins .
-# docker run -it wurssb/jenkins
 
 ENTRYPOINT ["/sbin/tini", "--", "/usr/local/bin/jenkins.sh"]
 
